@@ -23,15 +23,12 @@ def callback(message, context):
 
     if time.time() > context['edge']:
         logger.info(
-            "Edge has been broken, writing out. {} results for the last {} minute/s ({} heartbeats)".format(
-                len(context.counter),
-                NUM_MINUTES,
-                len(context.heartbeats)
-            )
+            f"Edge has been broken, writing out. {len(context.counter)} results for the last {NUM_MINUTES} minute/s ({len(context.heartbeats)} heartbeats)"
         )
 
+
         with open('/tmp/out.csv', 'a') as f:
-            f.write("{},{}\n".format(time.time(), len(context['counter'])))
+            f.write(f"{time.time()},{len(context['counter'])}\n")
 
         context.counter.clear()
         context.heartbeats.clear()

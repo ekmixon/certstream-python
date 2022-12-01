@@ -131,7 +131,7 @@ Protip: Looking for the old CertStream CLI behavior? Use the --grep flag!
 
         WIDTH = 28
 
-        cycle = itertools.cycle(range(1, WIDTH) + list(reversed(range(0, WIDTH-1))))
+        cycle = itertools.cycle(range(1, WIDTH) + list(reversed(range(WIDTH-1))))
 
         def _anim(loop, args):
             INTRO_MESSAGE, gui = args
@@ -179,11 +179,7 @@ Protip: Looking for the old CertStream CLI behavior? Use the --grep flag!
 
         logging.info("item_focused called...")
 
-        logging.info("Len {} | {}".format(
-                len(self.list_walker),
-                self.list_box.get_focus()[1]
-            )
-        )
+        logging.info(f"Len {len(self.list_walker)} | {self.list_box.get_focus()[1]}")
 
         self.counter_text.set_text(
             self.COUNTER_FORMAT.format(
@@ -241,21 +237,19 @@ Protip: Looking for the old CertStream CLI behavior? Use the --grep flag!
 
         if message['message_type'] == 'certificate_update':
             _, original_offset = self.list_box.get_focus()
-            self.list_walker.insert(0,
+            self.list_walker.insert(
+                0,
                 urwid.AttrMap(
                     FauxButton(
-                        "[{}] {} - {}".format(
-                            message['data']['cert_index'],
-                            message['data']['source']['url'],
-                            message['data']['leaf_cert']['subject']['CN'],
-                        ),
+                        f"[{message['data']['cert_index']}] {message['data']['source']['url']} - {message['data']['leaf_cert']['subject']['CN']}",
                         user_data=message,
-                        on_press=self.focus_right_panel
+                        on_press=self.focus_right_panel,
                     ),
                     '',
-                    focus_map='buttons'
-                )
+                    focus_map='buttons',
+                ),
             )
+
 
             self.counter_text.set_text(
                 self.COUNTER_FORMAT.format(
@@ -355,12 +349,12 @@ class SidelessLineBox(WidgetDecoration, WidgetWrap):
         if tline:
             if title_align not in ('left', 'center', 'right'):
                 raise ValueError('title_align must be one of "left", "right", or "center"')
-            if title_align == 'left':
+            if title_align == 'center':
+                tline_widgets = [tline, ('flow', self.title_widget), tline]
+            elif title_align == 'left':
                 tline_widgets = [('flow', self.title_widget), tline]
             else:
                 tline_widgets = [tline, ('flow', self.title_widget)]
-                if title_align == 'center':
-                    tline_widgets.append(tline)
             self.tline_widget = Columns(tline_widgets)
             top = Columns([
                 ('fixed', 1, tlcorner),
@@ -403,10 +397,7 @@ class SidelessLineBox(WidgetDecoration, WidgetWrap):
         WidgetWrap.__init__(self, pile)
 
     def format_title(self, text):
-        if len(text) > 0:
-            return "┤ {} ├".format(text)
-        else:
-            return ""
+        return f"┤ {text} ├" if len(text) > 0 else ""
 
     def set_title(self, text):
         if not self.title_widget:

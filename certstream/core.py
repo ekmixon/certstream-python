@@ -45,7 +45,9 @@ class CertStreamClient(WebSocketApp):
             raise
         if self.on_error_handler:
             self.on_error_handler(ex)
-        certstream_logger.error("Error connecting to CertStream - {} - Sleeping for a few seconds and trying again...".format(ex))
+        certstream_logger.error(
+            f"Error connecting to CertStream - {ex} - Sleeping for a few seconds and trying again..."
+        )
 
 def listen_for_events(message_callback, url, skip_heartbeats=True, setup_logger=True, on_open=None, on_error=None, **kwargs):
     try:
